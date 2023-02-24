@@ -130,5 +130,5 @@ dmypy.json
 /.idea
 
 # allur
-tests_demoqa/allure-results
+tests_ipa/allure-results
 .allure-results
