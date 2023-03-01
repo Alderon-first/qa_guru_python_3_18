@@ -1,48 +1,49 @@
 from pytest_voluptuous import S
+
 from schemas.user import create_user_schema
 
 
-def test_post_users_create_status_code(examp_api):
-    response = examp_api.post("users")
+def test_post_users_create_status_code(example_api):
+    response = example_api.post("/users")
     assert response.status_code == 201
 
 
-def test_post_users_create_data(examp_api):
+def test_post_users_create_data(example_api):
     payload = {
-            "name": "имя",
-            "job": "император земли"
-        }
-    response = examp_api.post("users", data=payload)
+        "name": "имя",
+        "job": "император земли"
+    }
+    response = example_api.post("/users", data=payload)
     assert response.status_code == 201
-    assert response.json().get("name", "имя")
-    assert response.json().get("job", "императьор земли")
+    assert "имя" == response.json().get("name")
+    assert "император земли" == response.json().get("job")
 
 
-def test_post_user_create_schema(examp_api):
+def test_post_user_create_schema(example_api):
     payload = {
-            "name": "имя",
-            "job": "император земли"
-        }
-    response = examp_api.post("users", data=payload)
+        "name": "имя",
+        "job": "император земли"
+    }
+    response = example_api.post("/users", data=payload)
     assert response.status_code == 201
     assert S(create_user_schema) == response.json()
 
 
-def test_login_user(examp_api):
+def test_login_user(example_api):
     payload = {
-            "email": "eve.holt@reqres.in",
-            "password": "cityslicka"
-        }
-    response = examp_api.post("login", data=payload)
+        "email": "eve.holt@reqres.in",
+        "password": "cityslicka"
+    }
+    response = example_api.post("/login", data=payload)
     assert response.status_code == 200
-    assert response.json()["token"] is not None
+    assert response.json()["token"].isalnum()
+    assert len(response.json()["token"]) > 8
 
 
-def test_login_user_error(examp_api):
+def test_login_user_error(example_api):
     payload = {
-            "email": "eve.holt@reqres.in"
-        }
-    response = examp_api.post("login", data=payload)
+        "email": "eve.holt@reqres.in"
+    }
+    response = example_api.post("/login", data=payload)
     assert response.status_code == 400
-    assert response.json()["error"] is not None
     assert response.json()["error"] == "Missing password"
